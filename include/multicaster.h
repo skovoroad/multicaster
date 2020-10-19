@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <vector>
 
 namespace Multicaster {
 
@@ -18,6 +19,7 @@ namespace Multicaster {
     enum Code {
       UNKNOWN_ERROR,
       NOT_CONFIGURED,
+      SOCKET_ERROR,
     };
 
     std::string description;
@@ -25,14 +27,17 @@ namespace Multicaster {
   };
 
   struct Config {
-    std::string listen_endpoint_;
-    std::string multicast_address_;
-    uint16_t multicast_port_ = 0;
+    std::string listenAddress;
+    std::string multicastAddress;
+    uint16_t multicastPort = 0;
 
-    DataHandler * handler_ = nullptr; 
-    ExchangeLogger * logger_ = nullptr; 
+    DataHandler * handler = nullptr; 
+    ExchangeLogger * logger = nullptr; 
   };
 
+  using MessageBuffer = std::vector<char>; 
+  using MessageBufferPtr = std::shared_ptr<MessageBuffer>;
+     
   class ExchangePoint {
     public:
       ExchangePoint(); 
@@ -41,7 +46,7 @@ namespace Multicaster {
       Error::Ptr Start();
       Error::Ptr Stop();
 
-      Error::Ptr Send(const void *, size_t);
+      Error::Ptr Send(MessageBufferPtr&&);
     private:
       class Impl;
       std::unique_ptr<Impl> Impl_; 

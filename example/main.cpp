@@ -77,7 +77,7 @@ public:
     socket_.async_send_to(
         boost::asio::buffer(message_), endpoint_,
         boost::bind(&sender::handle_send_to, this,
-          boost::asio::placeholders::error));
+        boost::asio::placeholders::error));
   }
 
   void handle_send_to(const boost::system::error_code& error)
