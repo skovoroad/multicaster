@@ -31,6 +31,9 @@ namespace Multicaster {
 	  receiveSocket_.set_option(boost::asio::ip::udp::socket::reuse_address(true));
 	  receiveSocket_.bind(listenEndpoint);
           receiveSocket_.set_option(boost::asio::ip::multicast::join_group(multicastAddress));
+
+	  sendEndpoint_ = boost::asio::ip::udp::endpoint(multicastAddress, config_.multicastPort);
+          sendSocket_.open(sendEndpoint_.protocol());
 	}
 	catch (const std::exception& e) {
           return Error::Ptr(new Error {
@@ -42,6 +45,7 @@ namespace Multicaster {
       }
 
       Error::Ptr Start() {
+	Receive();
 	thread_.reset(new std::thread(
 	  [&](){
 	    ioService_.run();      
@@ -100,7 +104,7 @@ namespace Multicaster {
 	}
         else {
           // TODO filter own messages
-	  config_.handler->onReceive(rInfo->buffer.data(), rInfo->buffer.size());
+	  config_.handler->onReceive(rInfo->buffer.data(), nbytes);
 	}
 
         Receive();
@@ -108,7 +112,7 @@ namespace Multicaster {
 
       void SendMessage(MessageBufferPtr buffer) 
       {
-        sendSocket_.async_send_to(
+	sendSocket_.async_send_to(
           boost::asio::buffer(*buffer), 
 	  sendEndpoint_,
           boost::bind(
@@ -150,10 +154,14 @@ namespace Multicaster {
 
   ExchangePoint::ExchangePoint() {
   }
+
+  ExchangePoint::~ExchangePoint() {
+    Stop();
+  }
   
-  Error::Ptr ExchangePoint::Configure(Config &) {
+  Error::Ptr ExchangePoint::Configure(Config &config) {
     Impl_.reset(new Impl());
-    return Error::Ptr();
+    return Impl_->Configure(config);
   }
 
   Error::Ptr ExchangePoint::Start() {

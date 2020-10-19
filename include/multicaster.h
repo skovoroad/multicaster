@@ -41,6 +41,7 @@ namespace Multicaster {
   class ExchangePoint {
     public:
       ExchangePoint(); 
+      ~ExchangePoint(); 
       Error::Ptr Configure(Config &);
 
       Error::Ptr Start();
@@ -49,6 +50,6 @@ namespace Multicaster {
       Error::Ptr Send(MessageBufferPtr&&);
     private:
       class Impl;
-      std::unique_ptr<Impl> Impl_; 
+      std::shared_ptr<Impl> Impl_;  // shared, not unique! shared_from_this in implementation
   };
 }

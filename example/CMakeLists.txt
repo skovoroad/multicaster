@@ -8,7 +8,7 @@ file(GLOB SOURCE_FILES *.cpp)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_RELEASE_LIBS ON)
-find_package(Boost 1.68.0 REQUIRED COMPONENTS program_options system)
+find_package(Boost 1.68.0 REQUIRED COMPONENTS program_options system thread)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 

@@ -14,7 +14,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_RELEASE_LIBS ON)
-find_package(Boost 1.68.0 REQUIRED COMPONENTS date_time regex thread)
+add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
+find_package(Boost 1.68.0 REQUIRED COMPONENTS date_time regex thread system)
 
 add_subdirectory(src)
 
